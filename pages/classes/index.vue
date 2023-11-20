@@ -91,10 +91,13 @@ const onFilter = async (event: DataTableFilterEvent) => {
 const showFormModal = ref<boolean>(false);
 
 async function saveClass(values: any) {
+  const name = values.name.toLowerCase();
+
   const { data } = await supabase
       .from('classes')
       .insert({
         ...values,
+        name: name.charAt(0).toUpperCase() + name.slice(1),
         reference: parse(values.reference, 'MM/yyyy', 1),
       })
       .select();
