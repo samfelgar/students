@@ -3,6 +3,7 @@ import FreshmenCard from "~/components/stats/FreshmenCard.vue";
 import VeteransCard from "~/components/stats/VeteransCard.vue";
 import TotalStudentsCard from "~/components/stats/TotalStudentsCard.vue";
 import ClassesStudentsCountCard from "~/components/stats/ClassesStudentsCountCard.vue";
+import ProbemCard from "~/components/stats/ProbemCard.vue";
 
 definePageMeta({
   title: 'Inicio'
@@ -12,10 +13,11 @@ definePageMeta({
 <template>
   <Suspense>
     <div>
-      <div class="grid grid-flow-row md:grid-flow-col md:grid-cols-3 gap-4">
+      <div class="grid md:grid-cols-3 gap-4">
         <FreshmenCard/>
         <VeteransCard/>
         <TotalStudentsCard/>
+        <ProbemCard/>
       </div>
       <ClassesStudentsCountCard class="mt-4"/>
     </div>
