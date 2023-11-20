@@ -8,6 +8,7 @@ useHead({
 
 <template>
   <div class="flex flex-col md:flex-row gap-4 p-2">
+    <Toast />
     <NuxtLoadingIndicator color="blue"/>
     <AppSidebar class="hidden md:block"/>
     <Card class="w-full">
