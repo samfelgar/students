@@ -1,18 +1,20 @@
 <script setup lang="ts">
 import type { DataTableFilterEvent, DataTableFilterMeta, DataTablePageEvent } from "primevue/datatable";
-import { format, parse, startOfMonth } from 'date-fns';
+import { format, parse, parseISO, startOfMonth } from 'date-fns';
+import { useToast } from "primevue/usetoast";
 
 definePageMeta({
   title: 'Turmas'
 })
 
+const toast = useToast();
 const supabase = useSupabaseClient();
 
 const limit = 10;
 
 type Filter = {
   key: string;
-  value: string;
+  value: string | Date;
   matchMode: string;
 }
 
@@ -28,7 +30,8 @@ const loadPage = async (page: number, filters: Filter[] = []) => {
     if (filter.matchMode !== 'dateIs') {
       query.ilike(filter.key, `%${filter.value}%`);
     } else {
-      query.eq(filter.key, format(startOfMonth(filter.value), 'yyyy-MM-dd'));
+      const date = typeof filter.value === 'string' ? parseISO(filter.value) : filter.value;
+      query.eq(filter.key, format(startOfMonth(date), 'yyyy-MM-dd'));
     }
   }
 
@@ -85,45 +88,80 @@ const onFilter = async (event: DataTableFilterEvent) => {
   total.value = count ?? 0;
 };
 
+const showFormModal = ref<boolean>(false);
+
+async function saveClass(values: any) {
+  const { data } = await supabase
+      .from('classes')
+      .insert({
+        ...values,
+        reference: parse(values.reference, 'MM/yyyy', 1),
+      })
+      .select();
+
+  if (data === null) {
+    toast.add({
+      summary: 'Ops',
+      detail: 'Não foi possível adicionar a turma',
+      severity: 'error'
+    })
+    return;
+  }
+
+  classes.value.unshift(data[0]);
+  showFormModal.value = false;
+}
+
 </script>
 
 <template>
-  <DataTable :value="classes"
-             paginator
-             lazy
-             :first="0"
-             :rows="limit"
-             :total-records="total"
-             :loading="loading"
-             :filters="filters"
-             filter-display="row"
-             @page="onPage($event)"
-             @filter="onFilter($event)">
-    <Column field="id" header="ID"></Column>
-    <Column field="name" header="Nome" filter-header-class="w-96 px-1 py-2" :show-filter-menu="false">
-      <template #filter="{filterModel, filterCallback}">
-        <InputText type="text"
-                   v-model="filterModel.value"
-                   @keydown.enter="filterCallback"
-                   class="p-2"/>
-      </template>
-    </Column>
-    <Column field="period" header="Período"></Column>
-    <Column field="reference" header="Referência" filter-header-class="w-96 px-1 py-2" :show-filter-menu="false">
-      <template #filter="{filterModel, filterCallback}">
-        <Calendar v-model="filterModel.value"
-                  date-format="mm/yy"
-                  view="month"
-                  @date-select="filterCallback"
-                  class="p-2"/>
-      </template>
-      <template #body="{ data }">
-        <span>{{ format(parse(data.reference, 'yyyy-MM-dd', startOfMonth(new Date())), 'MM/yyyy') }}</span>
-      </template>
-    </Column>
+  <div>
+    <Button @click="showFormModal = true" class="mb-2">Nova turma</Button>
+    <ClassesForm v-model:visible="showFormModal" @submit="saveClass"/>
+    <DataTable :value="classes"
+               paginator
+               lazy
+               :first="0"
+               :rows="limit"
+               :total-records="total"
+               :loading="loading"
+               :filters="filters"
+               filter-display="row"
+               @page="onPage($event)"
+               @filter="onFilter($event)">
+      <Column field="id" header="ID"></Column>
+      <Column field="name" header="Nome" filter-header-class="w-96 px-1 py-2" :show-filter-menu="false">
+        <template #filter="{filterModel, filterCallback}">
+          <InputText type="text"
+                     v-model="filterModel.value"
+                     @keydown.enter="filterCallback"
+                     :pt="{root: { class: 'p-2' }}"/>
+        </template>
+      </Column>
+      <Column field="period" header="Período"></Column>
+      <Column field="reference" header="Referência" filter-header-class="w-96 px-1 py-2" :show-filter-menu="false">
+        <template #filter="{filterModel, filterCallback}">
+          <Calendar v-model="filterModel.value"
+                    date-format="mm/yy"
+                    view="month"
+                    @date-select="filterCallback"
+                    :pt="{input: { class: 'p-2' }}"/>
+        </template>
+        <template #body="{ data }">
+          <span>{{ format(parse(data.reference, 'yyyy-MM-dd', startOfMonth(new Date())), 'MM/yyyy') }}</span>
+        </template>
+      </Column>
+      <Column header="Ações">
+        <template #body="{ data }">
+          <NuxtLink :href="`/classes/${data.id}`" class="p-button">
+            <i class="pi pi-eye"></i>
+          </NuxtLink>
+        </template>
+      </Column>
 
-    <template #empty>Sem resultados.</template>
-  </DataTable>
+      <template #empty>Sem resultados.</template>
+    </DataTable>
+  </div>
 </template>
 
 <style scoped>
