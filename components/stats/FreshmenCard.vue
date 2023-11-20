@@ -5,9 +5,9 @@ const supabase = useSupabaseClient();
 
 const { count } = await supabase
     .from('students')
-    .select('*, classes!students_class_id_fkey!inner(*)', { count: 'exact', head: true })
+    .select('*', { count: 'exact', head: true })
     .eq('active', true)
-    .eq('classes.period', 1);
+    .eq('freshman', true);
 
 const freshmenCount = ref<number>(0);
 freshmenCount.value = count ?? 0;

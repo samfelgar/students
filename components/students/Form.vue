@@ -9,6 +9,7 @@ const schema = yup.object({
   name: yup.string().required().label('nome'),
   observation: yup.string().notRequired().label('observação'),
   probem: yup.boolean().required().default(false),
+  freshman: yup.boolean().required().default(false),
 });
 
 const { handleSubmit, defineComponentBinds, errors, resetForm } = useForm({ validationSchema: schema });
@@ -16,6 +17,7 @@ const { handleSubmit, defineComponentBinds, errors, resetForm } = useForm({ vali
 const name = defineComponentBinds('name');
 const observation = defineComponentBinds('observation');
 const probem = defineComponentBinds('probem');
+const freshman = defineComponentBinds('freshman');
 
 const emit = defineEmits(['submit']);
 
@@ -46,6 +48,12 @@ const handleSubmission = handleSubmit((values) => {
         <Checkbox input-id="probem" v-bind="probem" :binary="true" class="mr-2"></Checkbox>
         <label for="probem">Probem</label>
         <small v-if="errors.probem" class="p-error block" id="text-error">{{ errors.probem }}</small>
+      </div>
+
+      <div class="my-3 md:my-0">
+        <Checkbox input-id="freshman" v-bind="freshman" :binary="true" class="mr-2"></Checkbox>
+        <label for="freshman">Calouro</label>
+        <small v-if="errors.freshman" class="p-error block" id="text-error">{{ errors.freshman }}</small>
       </div>
 
       <div class="md:justify-self-center md:self-center">

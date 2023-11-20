@@ -17,6 +17,7 @@ type Student = {
   observation?: string;
   active: boolean;
   probem: boolean;
+  freshman: boolean;
 };
 
 type ClassRecord = {
@@ -54,7 +55,7 @@ const addStudent = async (values: any) => {
   classRecord.value?.students.push(student[0]);
 }
 
-const toggleStudentBooleanProperty = async (studentId: number, currentStatus: boolean, property: 'active' | 'probem'): Promise<void> => {
+const toggleStudentBooleanProperty = async (studentId: number, currentStatus: boolean, property: 'active' | 'probem' | 'freshman'): Promise<void> => {
   const newStatus = !currentStatus;
 
   const payload: {[key: string]: boolean} = {};
@@ -96,6 +97,10 @@ const toggleActive = async (studentId: number, current: boolean) => {
 
 const toggleProbem = async (studentId: number, current: boolean) => {
   await toggleStudentBooleanProperty(studentId, current, 'probem');
+}
+
+const toggleFreshman = async (studentId: number, current: boolean) => {
+  await toggleStudentBooleanProperty(studentId, current, 'freshman');
 }
 
 </script>
@@ -145,6 +150,14 @@ const toggleProbem = async (studentId: number, current: boolean) => {
                     link
                     :icon="`pi ${data.probem ? 'pi-check-circle' : 'pi-times-circle'}`"
                     :class="{'text-green-600': data.probem, 'text-red-600': !data.probem}"/>
+          </template>
+        </Column>
+        <Column field="freshman" header="Calouro">
+          <template #body="{data}: {data: Student}">
+            <Button @click="toggleFreshman(data.id, data.freshman)"
+                    link
+                    :icon="`pi ${data.freshman ? 'pi-check-circle' : 'pi-times-circle'}`"
+                    :class="{'text-green-600': data.freshman, 'text-red-600': !data.freshman}"/>
           </template>
         </Column>
 
