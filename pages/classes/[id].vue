@@ -31,7 +31,7 @@ const classRecord = ref<ClassRecord | null>(null);
 
 const { data } = await supabase
     .from('classes')
-    .select('*, students!students_class_id_fkey!inner(*)')
+    .select('*, students!students_class_id_fkey(*)')
     .eq('id', route.params.id)
     .maybeSingle();
 
