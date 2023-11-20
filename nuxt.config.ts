@@ -3,7 +3,8 @@ export default defineNuxtConfig({
     devtools: {enabled: false},
     modules: [
         'nuxt-primevue',
-        '@nuxtjs/supabase'
+        '@nuxtjs/supabase',
+        '@vueuse/nuxt',
     ],
     css: [
         '~/assets/css/main.css',
