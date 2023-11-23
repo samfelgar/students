@@ -4,9 +4,9 @@ import ValueCard from "~/components/stats/ValueCard.vue";
 const supabase = useSupabaseClient();
 const { count } = await supabase
     .from('students')
-    .select('*, classes!students_class_id_fkey!inner(*)', { count: 'exact', head: true })
+    .select('*', { count: 'exact', head: true })
     .eq('active', true)
-    .neq('classes.period', 1);
+    .eq('freshman', false);
 
 const veteransCount = ref<number>(0);
 veteransCount.value = count ?? 0;
