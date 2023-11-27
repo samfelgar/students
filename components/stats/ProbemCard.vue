@@ -5,6 +5,7 @@ const supabase = useSupabaseClient();
 const { count } = await supabase
     .from('students')
     .select('*', { count: 'exact', head: true })
+    .eq('active', true)
     .eq('probem', true);
 
 const studentsCount = ref<number>(0);
